@@ -6,7 +6,7 @@
 /*   By: ide-albe <ide-albe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 17:04:49 by ide-albe          #+#    #+#             */
-/*   Updated: 2023/10/13 19:47:14 by ide-albe         ###   ########.fr       */
+/*   Updated: 2023/10/14 18:23:42 by ide-albe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ void	mutex_init(t_data *data)
 	}
 	pthread_mutex_init(&data->mssg, NULL);
 	pthread_mutex_init(&data->eat_lock, NULL);
+	pthread_mutex_init(&data->deathcheck_mutex, NULL);
 }
 
 void	assign_philos_data(t_data *data)
@@ -68,7 +69,6 @@ void	assign_philos_data(t_data *data)
 		data->philo[i].meals = 0;
 		pthread_mutex_init(&data->philo[i].last_meal_mutex, NULL);
 		pthread_mutex_init(&data->philo[i].meal_mutex, NULL);
-		pthread_mutex_init(&data->deathcheck_mutex, NULL);
 		i++;
 	}
 }

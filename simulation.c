@@ -6,7 +6,7 @@
 /*   By: ide-albe <ide-albe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 17:04:49 by ide-albe          #+#    #+#             */
-/*   Updated: 2023/10/13 20:45:29 by ide-albe         ###   ########.fr       */
+/*   Updated: 2023/10/14 19:07:49 by ide-albe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,8 @@ void	simulation(t_data *data)
 
 	data->time = get_time_in_ms();
 	i = 0;
-	pthread_mutex_lock(&data->mssg);
-	pthread_mutex_lock(&data->eat_lock);
 	while (i < data->nphilo)
 	{
-		pthread_mutex_unlock(&data->mssg);
-		pthread_mutex_unlock(&data->eat_lock);
 		data->philo[i].last_meal = data->time;
 		pthread_create(&data->philo[i].thread, NULL, philo, &data->philo[i]);
 		i++;
@@ -39,8 +35,12 @@ void	*philo(void *data)
 	philo = (t_philo *) data;
 	param = philo->data;
 	(void)param;
-	while (philo->data->death_check != 1 && philo->data->all_meals != 1)
+	while (1)
 	{
+		pthread_mutex_lock(&philo->data->deathcheck_mutex);
+		if (philo->data->death_check == 1 || philo->data->all_meals == 1)
+			break ;
+		pthread_mutex_unlock(&philo->data->deathcheck_mutex);
 		if ((philo->philo_pos % 2) == 0)
 			left_has_taken_fork(philo);
 		else
@@ -48,6 +48,7 @@ void	*philo(void *data)
 		is_sleeping(philo);
 		is_thinking(philo);
 	}
+	pthread_mutex_unlock(&philo->data->deathcheck_mutex);
 	return (0);
 }
 
@@ -84,8 +85,10 @@ void	line_redu2(t_data *data, t_philo *philo)
 		data_cpy[i] = philo[i].meals;
 		pthread_mutex_unlock(&philo[i].meal_mutex);
 	}
+	pthread_mutex_lock(&philo->data->deathcheck_mutex);
 	if (i == data->nphilo)
 		data->all_meals = 1;
+	pthread_mutex_unlock(&philo->data->deathcheck_mutex);
 	free(data_cpy);
 }
 

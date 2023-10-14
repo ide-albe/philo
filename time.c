@@ -6,7 +6,7 @@
 /*   By: ide-albe <ide-albe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 17:04:49 by ide-albe          #+#    #+#             */
-/*   Updated: 2023/09/27 15:55:12 by ide-albe         ###   ########.fr       */
+/*   Updated: 2023/10/14 17:20:35 by ide-albe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,15 @@ void	ft_sleep(t_data *data, time_t sleep)
 	time_t	wake_up;
 
 	wake_up = get_time();
-	while (!(data->death_check))
+	while (1)
 	{
+		pthread_mutex_lock(&data->deathcheck_mutex);
+		if (data->death_check)
+		{
+			pthread_mutex_unlock(&data->deathcheck_mutex);
+			break ;
+		}
+		pthread_mutex_unlock(&data->deathcheck_mutex);
 		if (ft_time_diff(wake_up, get_time()) >= sleep)
 			break ;
 		usleep(50);
