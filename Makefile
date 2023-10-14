@@ -12,7 +12,7 @@
 
 CC			= gcc -g 
 NAME		= philo
-CFLAGS		= -Wall -Wextra -Werror -fsanitize=thread
+CFLAGS		= -Wall -Wextra -Werror
 SRC			= philo_main.c utils.c routine.c time.c simulation.c inits.c
 OBJ			= $(SRC:.c=.o)
 
